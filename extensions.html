@@ -1,0 +1,400 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Creating a Twig Extension &mdash; Twig v1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Twig v1 documentation" href="index.html" />
+    <link rel="next" title="Hacking Twig" href="hacking.html" />
+    <link rel="prev" title="Extending Twig" href="advanced.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="hacking.html" title="Hacking Twig"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="advanced.html" title="Extending Twig"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Twig v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="creating-a-twig-extension">
+<h1>Creating a Twig Extension<a class="headerlink" href="#creating-a-twig-extension" title="Permalink to this headline">¶</a></h1>
+<p>The main motivation for writing an extension is to move often used code into a
+reusable class like adding support for internationalization. An extension can
+define tags, filters, tests, operators, global variables, functions, and node
+visitors.</p>
+<p>Creating an extension also makes for a better separation of code that is
+executed at compilation time and code needed at runtime. As such, it makes
+your code faster.</p>
+<p>Most of the time, it is useful to create a single extension for your project,
+to host all the specific tags and filters you want to add to Twig.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Before writing your own extensions, have a look at the Twig official
+extension repository: <a class="reference external" href="http://github.com/fabpot/Twig-extensions">http://github.com/fabpot/Twig-extensions</a>.</p>
+</div>
+<p>An extension is a class that implements the following interface:</p>
+<div class="highlight-python"><pre>interface Twig_ExtensionInterface
+{
+    /**
+     * Initializes the runtime environment.
+     *
+     * This is where you can load some file that contains filter functions for instance.
+     *
+     * @param Twig_Environment $environment The current Twig_Environment instance
+     */
+    public function initRuntime(Twig_Environment $environment);
+
+    /**
+     * Returns the token parser instances to add to the existing list.
+     *
+     * @return array An array of Twig_TokenParserInterface or Twig_TokenParserBrokerInterface instances
+     */
+    public function getTokenParsers();
+
+    /**
+     * Returns the node visitor instances to add to the existing list.
+     *
+     * @return array An array of Twig_NodeVisitorInterface instances
+     */
+    public function getNodeVisitors();
+
+    /**
+     * Returns a list of filters to add to the existing list.
+     *
+     * @return array An array of filters
+     */
+    public function getFilters();
+
+    /**
+     * Returns a list of tests to add to the existing list.
+     *
+     * @return array An array of tests
+     */
+    public function getTests();
+
+    /**
+     * Returns a list of operators to add to the existing list.
+     *
+     * @return array An array of operators
+     */
+    public function getOperators();
+
+    /**
+     * Returns a list of global functions to add to the existing list.
+     *
+     * @return array An array of global functions
+     */
+    public function getGlobals();
+
+    /**
+     * Returns the name of the extension.
+     *
+     * @return string The extension name
+     */
+    public function getName();
+}</pre>
+</div>
+<p>To keep your extension class clean and lean, it can inherit from the built-in
+<tt class="docutils literal"><span class="pre">Twig_Extension</span></tt> class instead of implementing the whole interface. That
+way, you just need to implement the <tt class="docutils literal"><span class="pre">getName()</span></tt> method as the
+<tt class="docutils literal"><span class="pre">Twig_Extension</span></tt> provides empty implementations for all other methods.</p>
+<p>The <tt class="docutils literal"><span class="pre">getName()</span></tt> method must return a unique identifier for your extension.</p>
+<p>Now, with this information in mind, let&#8217;s create the most basic extension
+possible:</p>
+<div class="highlight-python"><pre>class Project_Twig_Extension extends Twig_Extension
+{
+    public function getName()
+    {
+        return 'project';
+    }
+}</pre>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Of course, this extension does nothing for now. We will customize it in
+the next sections.</p>
+</div>
+<p>Twig does not care where you save your extension on the filesystem, as all
+extensions must be registered explicitly to be available in your templates.</p>
+<p>You can register an extension by using the <tt class="docutils literal"><span class="pre">addExtension()</span></tt> method on your
+main <tt class="docutils literal"><span class="pre">Environment</span></tt> object:</p>
+<div class="highlight-python"><pre>$twig = new Twig_Environment($loader);
+$twig-&gt;addExtension(new Project_Twig_Extension());</pre>
+</div>
+<p>Of course, you need to first load the extension file by either using
+<tt class="docutils literal"><span class="pre">require_once()</span></tt> or by using an autoloader (see <a class="reference external" href="http://www.php.net/spl_autoload_register">spl_autoload_register()</a>).</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">The bundled extensions are great examples of how extensions work.</p>
+</div>
+<div class="section" id="globals-and-functions">
+<h2>Globals and Functions<a class="headerlink" href="#globals-and-functions" title="Permalink to this headline">¶</a></h2>
+<p>Global variables and functions can be registered in an extensions via the
+<tt class="docutils literal"><span class="pre">getGlobals()</span></tt> method:</p>
+<div class="highlight-python"><pre>class Project_Twig_Extension extends Twig_Extension
+{
+    public function getGlobals()
+    {
+        return array(
+            'text' =&gt; new Text(),
+            'lipsum' =&gt; new Twig_Function(new Text(), 'getLipsum'),
+        );
+    }
+
+    // ...
+}</pre>
+</div>
+</div>
+<div class="section" id="filters">
+<h2>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h2>
+<p>To add a filter to an extension, you need to override the <tt class="docutils literal"><span class="pre">getFilters()</span></tt>
+method. This method must return an array of filters to add to the Twig
+environment:</p>
+<div class="highlight-python"><pre>class Project_Twig_Extension extends Twig_Extension
+{
+    public function getFilters()
+    {
+        return array(
+            'rot13' =&gt; new Twig_Filter_Function('str_rot13'),
+        );
+    }
+
+    // ...
+}</pre>
+</div>
+<p>As you can see in the above code, the <tt class="docutils literal"><span class="pre">getFilters()</span></tt> method returns an array
+where keys are the name of the filters (<tt class="docutils literal"><span class="pre">rot13</span></tt>) and the values the
+definition of the filter (<tt class="docutils literal"><span class="pre">new</span> <span class="pre">Twig_Filter_Function('str_rot13')</span></tt>).</p>
+<p>As seen in the previous chapter, you can also define filters as static methods
+on the extension class:</p>
+<div class="highlight-python"><pre>$twig-&gt;addFilter('rot13', new Twig_Filter_Function('Project_Twig_Extension::rot13Filter'));</pre>
+</div>
+<p>You can also use <tt class="docutils literal"><span class="pre">Twig_Filter_Method</span></tt> instead of <tt class="docutils literal"><span class="pre">Twig_Filter_Function</span></tt>
+when defining a filter to use a method:</p>
+<div class="highlight-python"><pre>class Project_Twig_Extension extends Twig_Extension
+{
+    public function getFilters()
+    {
+        return array(
+            'rot13' =&gt; new Twig_Filter_Method($this, 'rot13Filter'),
+        );
+    }
+
+    public function rot13Filter($string)
+    {
+        return str_rot13($string);
+    }
+
+    // ...
+}</pre>
+</div>
+<p>The first argument of the <tt class="docutils literal"><span class="pre">Twig_Filter_Method</span></tt> constructor is always
+<tt class="docutils literal"><span class="pre">$this</span></tt>, the current extension object. The second one is the name of the
+method to call.</p>
+<p>Using methods for filters is a great way to package your filter without
+polluting the global namespace. This also gives the developer more flexibility
+at the cost of a small overhead.</p>
+<div class="section" id="overriding-default-filters">
+<h3>Overriding default Filters<a class="headerlink" href="#overriding-default-filters" title="Permalink to this headline">¶</a></h3>
+<p>If some default core filters do not suit your needs, you can easily override
+them by creating your own core extension. Of course, you don&#8217;t need to copy
+and paste the whole core extension code of Twig. Instead, you can just extends
+it and override the filter(s) you want by overriding the <tt class="docutils literal"><span class="pre">getFilters()</span></tt>
+method:</p>
+<div class="highlight-python"><pre>class MyCoreExtension extends Twig_Extension_Core
+{
+    public function getFilters()
+    {
+        return array_merge(parent::getFilters(), array(
+            'date' =&gt; new Twig_Filter_Method($this, 'dateFilter'),
+            // ...
+        ));
+    }
+
+    public function dateFilter($timestamp, $format = 'F j, Y H:i')
+    {
+        return '...'.twig_date_format_filter($timestamp, $format);
+    }
+
+    // ...
+}</pre>
+</div>
+<p>Here, we override the <tt class="docutils literal"><span class="pre">date</span></tt> filter with a custom one. Using this new core
+extension is as simple as registering the <tt class="docutils literal"><span class="pre">MyCoreExtension</span></tt> extension by
+calling the <tt class="docutils literal"><span class="pre">addExtension()</span></tt> method on the environment instance:</p>
+<div class="highlight-python"><pre>$twig = new Twig_Environment($loader);
+$twig-&gt;addExtension(new MyCoreExtension());</pre>
+</div>
+<p>But I can already hear some people wondering how it can work as the Core
+extension is loaded by default. That&#8217;s true, but the trick is that both
+extensions share the same unique identifier (<tt class="docutils literal"><span class="pre">core</span></tt> - defined in the
+<tt class="docutils literal"><span class="pre">getName()</span></tt> method). By registering an extension with the same name as an
+existing one, you have actually overridden the default one, even if it is
+already registered:</p>
+<div class="highlight-python"><pre>$twig-&gt;addExtension(new Twig_Extension_Core());
+$twig-&gt;addExtension(new MyCoreExtension());</pre>
+</div>
+</div>
+</div>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<p>Adding a tag in an extension can be done by overriding the
+<tt class="docutils literal"><span class="pre">getTokenParsers()</span></tt> method. This method must return an array of tags to add
+to the Twig environment:</p>
+<div class="highlight-python"><pre>class Project_Twig_Extension extends Twig_Extension
+{
+    public function getTokenParsers()
+    {
+        return array(new Project_Set_TokenParser());
+    }
+
+    // ...
+}</pre>
+</div>
+<p>In the above code, we have added a single new tag, defined by the
+<tt class="docutils literal"><span class="pre">Project_Set_TokenParser</span></tt> class. The <tt class="docutils literal"><span class="pre">Project_Set_TokenParser</span></tt> class is
+responsible for parsing the tag and compiling it to PHP.</p>
+</div>
+<div class="section" id="operators">
+<h2>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">getOperators()</span></tt> methods allows to add new operators. Here is how to add
+<tt class="docutils literal"><span class="pre">!</span></tt>, <tt class="docutils literal"><span class="pre">||</span></tt>, and <tt class="docutils literal"><span class="pre">&amp;&amp;</span></tt> operators:</p>
+<div class="highlight-python"><pre>class Project_Twig_Extension extends Twig_Extension
+{
+    public function getOperators()
+    {
+        return array(
+            array(
+                '!' =&gt; array('precedence' =&gt; 50, 'class' =&gt; 'Twig_Node_Expression_Unary_Not'),
+            ),
+            array(
+                '||' =&gt; array('precedence' =&gt; 10, 'class' =&gt; 'Twig_Node_Expression_Binary_Or', 'associativity' =&gt; Twig_ExpressionParser::OPERATOR_LEFT),
+                '&amp;&amp;' =&gt; array('precedence' =&gt; 15, 'class' =&gt; 'Twig_Node_Expression_Binary_And', 'associativity' =&gt; Twig_ExpressionParser::OPERATOR_LEFT),
+            ),
+        );
+    }
+
+    // ...
+}</pre>
+</div>
+</div>
+<div class="section" id="tests">
+<h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">getTests()</span></tt> methods allows to add new test functions:</p>
+<div class="highlight-python"><pre>class Project_Twig_Extension extends Twig_Extension
+{
+    public function getTests()
+    {
+        return array(
+            'even' =&gt; new Twig_Test_Function('twig_test_even'),
+        );
+    }
+
+    // ...
+}</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Creating a Twig Extension</a><ul>
+<li><a class="reference internal" href="#globals-and-functions">Globals and Functions</a></li>
+<li><a class="reference internal" href="#filters">Filters</a><ul>
+<li><a class="reference internal" href="#overriding-default-filters">Overriding default Filters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tags">Tags</a></li>
+<li><a class="reference internal" href="#operators">Operators</a></li>
+<li><a class="reference internal" href="#tests">Tests</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="advanced.html"
+                        title="previous chapter">Extending Twig</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="hacking.html"
+                        title="next chapter">Hacking Twig</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/extensions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="hacking.html" title="Hacking Twig"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="advanced.html" title="Extending Twig"
+             >previous</a> |</li>
+        <li><a href="index.html">Twig v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Rafael Goulart.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
