@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Twig for Developers &mdash; Twig v1 documentation</title>
+    <title>Twig for Developers &mdash; Twig Documentation 1.13.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1',
+        VERSION:     '1.13.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Twig v1 documentation" href="index.html" />
+    <link rel="top" title="Twig Documentation 1.13.0 documentation" href="index.html" />
     <link rel="next" title="Extending Twig" href="advanced.html" />
     <link rel="prev" title="Twig for Template Designers" href="templates.html" /> 
   </head>
@@ -39,7 +42,7 @@
         <li class="right" >
           <a href="templates.html" title="Twig for Template Designers"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Twig v1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Twig Documentation 1.13.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -70,7 +73,7 @@ Twig_Autoloader::register();
 
 $loader = new Twig_Loader_Filesystem('/path/to/templates');
 $twig = new Twig_Environment($loader, array(
-  'cache' =&gt; '/path/to/compilation_cache',
+    'cache' =&gt; '/path/to/compilation_cache',
 ));</pre>
 </div>
 <p>This will create a template environment with the default settings and a loader
@@ -97,9 +100,12 @@ cache library.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">The <tt class="docutils literal"><span class="pre">display()</span></tt> method is a shortcut to output the template directly.</p>
 </div>
+<p>You can also load and render the template in one fell swoop:</p>
+<div class="highlight-python"><pre>echo $twig-&gt;render('index.html', array('the' =&gt; 'variables', 'go' =&gt; 'here'));</pre>
+</div>
 </div>
 <div class="section" id="environment-options">
-<h2>Environment Options<a class="headerlink" href="#environment-options" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>Environment Options<a class="headerlink" href="#environment-options" title="Permalink to this headline">¶</a></h2>
 <p>When creating a new <tt class="docutils literal"><span class="pre">Twig_Environment</span></tt> instance, you can pass an array of
 options as the constructor second argument:</p>
 <div class="highlight-python"><pre>$twig = new Twig_Environment($loader, array('debug' =&gt; true));</pre>
@@ -123,7 +129,12 @@ variables (variables and or attributes/methods that do not exist) and
 replace them with a <tt class="docutils literal"><span class="pre">null</span></tt> value. When set to <tt class="docutils literal"><span class="pre">true</span></tt>, Twig throws an
 exception instead (default to <tt class="docutils literal"><span class="pre">false</span></tt>).</li>
 <li><tt class="docutils literal"><span class="pre">autoescape</span></tt>: If set to <tt class="docutils literal"><span class="pre">true</span></tt>, auto-escaping will be enabled by default
-for all templates (default to <tt class="docutils literal"><span class="pre">true</span></tt>).</li>
+for all templates (default to <tt class="docutils literal"><span class="pre">true</span></tt>). As of Twig 1.8, you can set the
+escaping strategy to use (<tt class="docutils literal"><span class="pre">html</span></tt>, <tt class="docutils literal"><span class="pre">js</span></tt>, <tt class="docutils literal"><span class="pre">false</span></tt> to disable).
+As of Twig 1.9, you can set the escaping strategy to use (<tt class="docutils literal"><span class="pre">css</span></tt>, <tt class="docutils literal"><span class="pre">url</span></tt>,
+<tt class="docutils literal"><span class="pre">html_attr</span></tt>, or a PHP callback that takes the template &#8220;filename&#8221; and must
+return the escaping strategy to use &#8211; the callback cannot be a function name
+to avoid collision with built-in escaping strategies).</li>
 <li><tt class="docutils literal"><span class="pre">optimizations</span></tt>: A flag that indicates which optimizations to apply
 (default to <tt class="docutils literal"><span class="pre">-1</span></tt> &#8211; all optimizations are enabled; set it to <tt class="docutils literal"><span class="pre">0</span></tt> to
 disable).</li>
@@ -144,31 +155,64 @@ for more information.</p>
 <div class="section" id="built-in-loaders">
 <h3>Built-in Loaders<a class="headerlink" href="#built-in-loaders" title="Permalink to this headline">¶</a></h3>
 <p>Here is a list of the built-in loaders Twig provides:</p>
-<ul>
-<li><p class="first"><tt class="docutils literal"><span class="pre">Twig_Loader_Filesystem</span></tt>: Loads templates from the file system. This
-loader can find templates in folders on the file system and is the preferred
-way to load them:</p>
+<div class="section" id="twig-loader-filesystem">
+<h4><tt class="docutils literal"><span class="pre">Twig_Loader_Filesystem</span></tt><a class="headerlink" href="#twig-loader-filesystem" title="Permalink to this headline">¶</a></h4>
+<p class="versionadded">
+<span class="versionmodified">New in version 1.10: </span>The <tt class="docutils literal"><span class="pre">prependPath()</span></tt> and support for namespaces were added in Twig 1.10.</p>
+<p><tt class="docutils literal"><span class="pre">Twig_Loader_Filesystem</span></tt> loads templates from the file system. This loader
+can find templates in folders on the file system and is the preferred way to
+load them:</p>
 <div class="highlight-python"><pre>$loader = new Twig_Loader_Filesystem($templateDir);</pre>
 </div>
 <p>It can also look for templates in an array of directories:</p>
 <div class="highlight-python"><pre>$loader = new Twig_Loader_Filesystem(array($templateDir1, $templateDir2));</pre>
 </div>
 <p>With such a configuration, Twig will first look for templates in
-<tt class="docutils literal"><span class="pre">$templateDir1</span></tt> and if they do not exist, it will fallback to look for
-them in the <tt class="docutils literal"><span class="pre">$templateDir2</span></tt>.</p>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">Twig_Loader_String</span></tt>: Loads templates from a string. It&#8217;s a dummy loader
-as you pass it the source code directly:</p>
-<div class="highlight-python"><pre>$loader = new Twig_Loader_String();</pre>
+<tt class="docutils literal"><span class="pre">$templateDir1</span></tt> and if they do not exist, it will fallback to look for them
+in the <tt class="docutils literal"><span class="pre">$templateDir2</span></tt>.</p>
+<p>You can add or prepend paths via the <tt class="docutils literal"><span class="pre">addPath()</span></tt> and <tt class="docutils literal"><span class="pre">prependPath()</span></tt>
+methods:</p>
+<div class="highlight-python"><pre>$loader-&gt;addPath($templateDir3);
+$loader-&gt;prependPath($templateDir4);</pre>
 </div>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">Twig_Loader_Array</span></tt>: Loads a template from a PHP array. It&#8217;s passed an
-array of strings bound to template names. This loader is useful for unit
-testing:</p>
-<div class="highlight-python"><pre>$loader = new Twig_Loader_Array($templates);</pre>
+<p>The filesystem loader also supports namespaced templates. This allows to group
+your templates under different namespaces which have their own template paths.</p>
+<p>When using the <tt class="docutils literal"><span class="pre">setPaths()</span></tt>, <tt class="docutils literal"><span class="pre">addPath()</span></tt>, and <tt class="docutils literal"><span class="pre">prependPath()</span></tt> methods,
+specify the namespace as the second argument (when not specified, these
+methods act on the &#8220;main&#8221; namespace):</p>
+<div class="highlight-python"><pre>$loader-&gt;addPath($templateDir, 'admin');</pre>
 </div>
-</li>
-</ul>
+<p>Namespaced templates can be accessed via the special
+<tt class="docutils literal"><span class="pre">&#64;namespace_name/template_path</span></tt> notation:</p>
+<div class="highlight-python"><pre>$twig-&gt;render('@admin/index.html', array());</pre>
+</div>
+</div>
+<div class="section" id="twig-loader-string">
+<h4><tt class="docutils literal"><span class="pre">Twig_Loader_String</span></tt><a class="headerlink" href="#twig-loader-string" title="Permalink to this headline">¶</a></h4>
+<p><tt class="docutils literal"><span class="pre">Twig_Loader_String</span></tt> loads templates from strings. It&#8217;s a dummy loader as
+the template reference is the template source code:</p>
+<div class="highlight-python"><pre>$loader = new Twig_Loader_String();
+$twig = new Twig_Environment($loader);
+
+echo $twig-&gt;render('Hello {{ name }}!', array('name' =&gt; 'Fabien'));</pre>
+</div>
+<p>This loader should only be used for unit testing as it has severe limitations:
+several tags, like <tt class="docutils literal"><span class="pre">extends</span></tt> or <tt class="docutils literal"><span class="pre">include</span></tt> do not make sense to use as the
+reference to the template is the template source code itself.</p>
+</div>
+<div class="section" id="twig-loader-array">
+<h4><tt class="docutils literal"><span class="pre">Twig_Loader_Array</span></tt><a class="headerlink" href="#twig-loader-array" title="Permalink to this headline">¶</a></h4>
+<p><tt class="docutils literal"><span class="pre">Twig_Loader_Array</span></tt> loads a template from a PHP array. It&#8217;s passed an array
+of strings bound to template names:</p>
+<div class="highlight-python"><pre>$loader = new Twig_Loader_Array(array(
+    'index.html' =&gt; 'Hello {{ name }}!',
+));
+$twig = new Twig_Environment($loader);
+
+echo $twig-&gt;render('index.html', array('name' =&gt; 'Fabien'));</pre>
+</div>
+<p>This loader is very useful for unit testing. It can also be used for small
+projects where storing all templates in a single PHP file might make sense.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p class="last">When using the <tt class="docutils literal"><span class="pre">Array</span></tt> or <tt class="docutils literal"><span class="pre">String</span></tt> loaders with a cache mechanism, you
@@ -176,6 +220,33 @@ should know that a new cache key is generated each time a template content
 &#8220;changes&#8221; (the cache key being the source code of the template). If you
 don&#8217;t want to see your cache grows out of control, you need to take care
 of clearing the old cache file by yourself.</p>
+</div>
+</div>
+<div class="section" id="twig-loader-chain">
+<h4><tt class="docutils literal"><span class="pre">Twig_Loader_Chain</span></tt><a class="headerlink" href="#twig-loader-chain" title="Permalink to this headline">¶</a></h4>
+<p><tt class="docutils literal"><span class="pre">Twig_Loader_Chain</span></tt> delegates the loading of templates to other loaders:</p>
+<div class="highlight-python"><pre>$loader1 = new Twig_Loader_Array(array(
+    'base.html' =&gt; '{% block content %}{% endblock %}',
+));
+$loader2 = new Twig_Loader_Array(array(
+    'index.html' =&gt; '{% extends "base.twig" %}{% block content %}Hello {{ name }}{% endblock %}',
+    'base.html'  =&gt; 'Will never be loaded',
+));
+
+$loader = new Twig_Loader_Chain(array($loader1, $loader2));
+
+$twig = new Twig_Environment($loader);</pre>
+</div>
+<p>When looking for a template, Twig will try each loader in turn and it will
+return as soon as the template is found. When rendering the <tt class="docutils literal"><span class="pre">index.html</span></tt>
+template from the above example, Twig will load it with <tt class="docutils literal"><span class="pre">$loader2</span></tt> but the
+<tt class="docutils literal"><span class="pre">base.html</span></tt> template will be loaded from <tt class="docutils literal"><span class="pre">$loader1</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">Twig_Loader_Chain</span></tt> accepts any loader that implements
+<tt class="docutils literal"><span class="pre">Twig_LoaderInterface</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can also add loaders via the <tt class="docutils literal"><span class="pre">addLoader()</span></tt> method.</p>
+</div>
 </div>
 </div>
 <div class="section" id="create-your-own-loader">
@@ -231,6 +302,11 @@ of clearing the old cache file by yourself.</p>
 </div>
 <p>The <tt class="docutils literal"><span class="pre">isFresh()</span></tt> method must return <tt class="docutils literal"><span class="pre">true</span></tt> if the current cached template
 is still fresh, given the last modification time, or <tt class="docutils literal"><span class="pre">false</span></tt> otherwise.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">As of Twig 1.11.0, you can also implement <tt class="docutils literal"><span class="pre">Twig_ExistsLoaderInterface</span></tt>
+to make your loader faster when used with the chain loader.</p>
+</div>
 </div>
 </div>
 <div class="section" id="using-extensions">
@@ -245,14 +321,11 @@ extension is as simple as using the <tt class="docutils literal"><span class="pr
 <li><em>Twig_Extension_Escaper</em>: Adds automatic output-escaping and the possibility
 to escape/unescape blocks of code.</li>
 <li><em>Twig_Extension_Sandbox</em>: Adds a sandbox mode to the default Twig
-environment, making it safe to evaluated untrusted code.</li>
-<li><em>Twig_Extension_Optimizer</em>: Optimizers the node tree before compilation.</li>
+environment, making it safe to evaluate untrusted code.</li>
+<li><em>Twig_Extension_Optimizer</em>: Optimizes the node tree before compilation.</li>
 </ul>
 <p>The core, escaper, and optimizer extensions do not need to be added to the
-Twig environment, as they are registered by default. You can disable an
-already registered extension:</p>
-<div class="highlight-python"><pre>$twig-&gt;removeExtension('escaper');</pre>
-</div>
+Twig environment, as they are registered by default.</p>
 </div>
 <div class="section" id="built-in-extensions">
 <h2>Built-in Extensions<a class="headerlink" href="#built-in-extensions" title="Permalink to this headline">¶</a></h2>
@@ -266,82 +339,33 @@ extensions.</p>
 <h3>Core Extension<a class="headerlink" href="#core-extension" title="Permalink to this headline">¶</a></h3>
 <p>The <tt class="docutils literal"><span class="pre">core</span></tt> extension defines all the core features of Twig:</p>
 <ul class="simple">
-<li>Tags:<ul>
-<li><tt class="docutils literal"><span class="pre">for</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">if</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">extends</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">include</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">block</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">filter</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">macro</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">import</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">from</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">set</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">spaceless</span></tt></li>
-</ul>
-</li>
-<li>Filters:<ul>
-<li><tt class="docutils literal"><span class="pre">date</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">format</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">replace</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">url_encode</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">json_encode</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">title</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">capitalize</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">upper</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">lower</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">striptags</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">join</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">reverse</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">length</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">sort</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">merge</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">default</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">keys</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">escape</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">e</span></tt></li>
-</ul>
-</li>
-<li>Functions:<ul>
-<li><tt class="docutils literal"><span class="pre">range</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">constant</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">cycle</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">parent</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">block</span></tt></li>
-</ul>
-</li>
-<li>Tests:<ul>
-<li><tt class="docutils literal"><span class="pre">even</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">odd</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">defined</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">sameas</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">none</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">divisibleby</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">constant</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">empty</span></tt></li>
-</ul>
-</li>
+<li><a class="reference internal" href="tags/index.html"><em>Tags</em></a>;</li>
+<li><a class="reference internal" href="filters/index.html"><em>Filters</em></a>;</li>
+<li><a class="reference internal" href="functions/index.html"><em>Functions</em></a>;</li>
+<li><a class="reference internal" href="tests/index.html"><em>Tests</em></a>.</li>
 </ul>
 </div>
 <div class="section" id="escaper-extension">
 <h3>Escaper Extension<a class="headerlink" href="#escaper-extension" title="Permalink to this headline">¶</a></h3>
 <p>The <tt class="docutils literal"><span class="pre">escaper</span></tt> extension adds automatic output escaping to Twig. It defines a
-new tag, <tt class="docutils literal"><span class="pre">autoescape</span></tt>, and a new filter, <tt class="docutils literal"><span class="pre">raw</span></tt>.</p>
+tag, <tt class="docutils literal"><span class="pre">autoescape</span></tt>, and a filter, <tt class="docutils literal"><span class="pre">raw</span></tt>.</p>
 <p>When creating the escaper extension, you can switch on or off the global
 output escaping strategy:</p>
-<div class="highlight-python"><pre>$escaper = new Twig_Extension_Escaper(true);
+<div class="highlight-python"><pre>$escaper = new Twig_Extension_Escaper('html');
 $twig-&gt;addExtension($escaper);</pre>
 </div>
-<p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, all variables in templates are escaped, except those using
-the <tt class="docutils literal"><span class="pre">raw</span></tt> filter:</p>
+<p>If set to <tt class="docutils literal"><span class="pre">html</span></tt>, all variables in templates are escaped (using the <tt class="docutils literal"><span class="pre">html</span></tt>
+escaping strategy), except those using the <tt class="docutils literal"><span class="pre">raw</span></tt> filter:</p>
 <div class="highlight-jinja"><div class="highlight"><pre><span class="cp">{{</span> <span class="nv">article.to_html</span><span class="o">|</span><span class="nf">raw</span> <span class="cp">}}</span><span class="x"></span>
 </pre></div>
 </div>
-<p>You can also change the escaping mode locally by using the <tt class="docutils literal"><span class="pre">autoescape</span></tt> tag:</p>
-<div class="highlight-jinja"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">autoescape</span> <span class="kp">true</span> <span class="cp">%}</span><span class="x"></span>
-<span class="x">  </span><span class="cp">{%</span> <span class="k">var</span> <span class="cp">%}</span><span class="x"></span>
-<span class="x">  </span><span class="cp">{%</span> <span class="k">var</span><span class="o">|</span><span class="nf">raw</span> <span class="cp">%}</span><span class="x">     </span><span class="c">{# var won&#39;t be escaped #}</span><span class="x"></span>
-<span class="x">  </span><span class="cp">{%</span> <span class="k">var</span><span class="o">|</span><span class="nf">escape</span> <span class="cp">%}</span><span class="x">   </span><span class="c">{# var won&#39;t be doubled-escaped #}</span><span class="x"></span>
+<p>You can also change the escaping mode locally by using the <tt class="docutils literal"><span class="pre">autoescape</span></tt> tag
+(see the <a class="reference internal" href="tags/autoescape.html"><em>autoescape</em></a> doc for the syntax used before
+Twig 1.8):</p>
+<div class="highlight-jinja"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">autoescape</span> <span class="s1">&#39;html&#39;</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">{{</span> <span class="nv">var</span> <span class="cp">}}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">{{</span> <span class="nv">var</span><span class="o">|</span><span class="nf">raw</span> <span class="cp">}}</span><span class="x">      </span><span class="c">{# var won&#39;t be escaped #}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">{{</span> <span class="nv">var</span><span class="o">|</span><span class="nf">escape</span> <span class="cp">}}</span><span class="x">   </span><span class="c">{# var won&#39;t be double-escaped #}</span><span class="x"></span>
 <span class="cp">{%</span> <span class="k">endautoescape</span> <span class="cp">%}</span><span class="x"></span>
 </pre></div>
 </div>
@@ -390,10 +414,10 @@ are never automatically escaped:</p>
 safe for the current context (e.g. <tt class="docutils literal"><span class="pre">html</span></tt> or <tt class="docutils literal"><span class="pre">js</span></tt>). <tt class="docutils literal"><span class="pre">escaper</span></tt> and
 <tt class="docutils literal"><span class="pre">escaper('html')</span></tt> are marked safe for html, <tt class="docutils literal"><span class="pre">escaper('js')</span></tt> is marked
 safe for javascript, <tt class="docutils literal"><span class="pre">raw</span></tt> is marked safe for everything.</p>
-<div class="highlight-jinja"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">autoescape</span> <span class="kp">true</span> <span class="nv">js</span> <span class="cp">%}</span><span class="x"></span>
-<span class="cp">{{</span> <span class="nv">var</span><span class="o">|</span><span class="nf">escape</span><span class="o">(</span><span class="s1">&#39;html&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="x"> </span><span class="c">{# will be escaped for html and javascript #}</span><span class="x"></span>
-<span class="cp">{{</span> <span class="nv">var</span> <span class="cp">}}</span><span class="x"> </span><span class="c">{# will be escaped for javascript #}</span><span class="x"></span>
-<span class="cp">{{</span> <span class="nv">var</span><span class="o">|</span><span class="nf">escape</span><span class="o">(</span><span class="s1">&#39;js&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="x"> </span><span class="c">{# won&#39;t be double-escaped #}</span><span class="x"></span>
+<div class="highlight-jinja"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">autoescape</span> <span class="s1">&#39;js&#39;</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">{{</span> <span class="nv">var</span><span class="o">|</span><span class="nf">escape</span><span class="o">(</span><span class="s1">&#39;html&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="x"> </span><span class="c">{# will be escaped for html and javascript #}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">{{</span> <span class="nv">var</span> <span class="cp">}}</span><span class="x"> </span><span class="c">{# will be escaped for javascript #}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">{{</span> <span class="nv">var</span><span class="o">|</span><span class="nf">escape</span><span class="o">(</span><span class="s1">&#39;js&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="x"> </span><span class="c">{# won&#39;t be double-escaped #}</span><span class="x"></span>
 <span class="cp">{%</span> <span class="k">endautoescape</span> <span class="cp">%}</span><span class="x"></span>
 </pre></div>
 </div>
@@ -458,6 +482,20 @@ to enable by passing them to the constructor:</p>
 
 $twig-&gt;addExtension($optimizer);</pre>
 </div>
+<p>Twig supports the following optimizations:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Twig_NodeVisitor_Optimizer::OPTIMIZE_ALL</span></tt>, enables all optimizations</li>
+</ul>
+<p>(this is the default value).
+* <tt class="docutils literal"><span class="pre">Twig_NodeVisitor_Optimizer::OPTIMIZE_NONE</span></tt>, disables all optimizations.
+This reduces the compilation time, but it can increase the execution time
+and the consumed memory.
+* <tt class="docutils literal"><span class="pre">Twig_NodeVisitor_Optimizer::OPTIMIZE_FOR</span></tt>, optimizes the <tt class="docutils literal"><span class="pre">for</span></tt> tag by
+removing the <tt class="docutils literal"><span class="pre">loop</span></tt> variable creation whenever possible.
+* <tt class="docutils literal"><span class="pre">Twig_NodeVisitor_Optimizer::OPTIMIZE_RAW_FILTER</span></tt>, removes the <tt class="docutils literal"><span class="pre">raw</span></tt>
+filter whenever possible.
+* <tt class="docutils literal"><span class="pre">Twig_NodeVisitor_Optimizer::OPTIMIZE_VAR_ACCESS</span></tt>, simplifies the creation
+and access of variables in the compiled templates whenever possible.</p>
 </div>
 </div>
 <div class="section" id="exceptions">
@@ -489,7 +527,13 @@ method is called in a sandboxed template.</li>
 <li><a class="reference internal" href="#environment-options">Environment Options</a></li>
 <li><a class="reference internal" href="#loaders">Loaders</a><ul>
 <li><a class="reference internal" href="#compilation-cache">Compilation Cache</a></li>
-<li><a class="reference internal" href="#built-in-loaders">Built-in Loaders</a></li>
+<li><a class="reference internal" href="#built-in-loaders">Built-in Loaders</a><ul>
+<li><a class="reference internal" href="#twig-loader-filesystem"><tt class="docutils literal"><span class="pre">Twig_Loader_Filesystem</span></tt></a></li>
+<li><a class="reference internal" href="#twig-loader-string"><tt class="docutils literal"><span class="pre">Twig_Loader_String</span></tt></a></li>
+<li><a class="reference internal" href="#twig-loader-array"><tt class="docutils literal"><span class="pre">Twig_Loader_Array</span></tt></a></li>
+<li><a class="reference internal" href="#twig-loader-chain"><tt class="docutils literal"><span class="pre">Twig_Loader_Chain</span></tt></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#create-your-own-loader">Create your own Loader</a></li>
 </ul>
 </li>
@@ -520,7 +564,7 @@ method is called in a sandboxed template.</li>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -546,12 +590,12 @@ method is called in a sandboxed template.</li>
         <li class="right" >
           <a href="templates.html" title="Twig for Template Designers"
              >previous</a> |</li>
-        <li><a href="index.html">Twig v1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Twig Documentation 1.13.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, Rafael Goulart.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+        &copy; Copyright 2013, Fabpot.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

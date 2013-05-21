@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction &mdash; Twig v1 documentation</title>
+    <title>Introduction &mdash; Twig Documentation 1.13.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1',
+        VERSION:     '1.13.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Twig v1 documentation" href="index.html" />
+    <link rel="top" title="Twig Documentation 1.13.0 documentation" href="index.html" />
     <link rel="next" title="Twig for Template Designers" href="templates.html" />
     <link rel="prev" title="Twig" href="index.html" /> 
   </head>
@@ -39,7 +42,7 @@
         <li class="right" >
           <a href="index.html" title="Twig"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Twig v1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Twig Documentation 1.13.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -72,12 +75,41 @@ developer to define its own custom tags and filters, and create its own DSL.</li
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>You have multiple ways to install Twig. If you are unsure what to do, go with
-the tarball.</p>
-<div class="section" id="from-the-tarball-release">
-<h3>From the tarball release<a class="headerlink" href="#from-the-tarball-release" title="Permalink to this headline">¶</a></h3>
+<p>You have multiple ways to install Twig.</p>
+<div class="section" id="installing-via-composer-recommended">
+<h3>Installing via Composer (recommended)<a class="headerlink" href="#installing-via-composer-recommended" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Download the most recent tarball from the <a class="reference external" href="http://www.twig-project.org/installation">download page</a></li>
+<li>Install composer in your project:</li>
+</ol>
+<div class="highlight-bash"><div class="highlight"><pre>curl -s http://getcomposer.org/installer | php
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Create a <tt class="docutils literal"><span class="pre">composer.json</span></tt> file in your project root:</li>
+</ol>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;require&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;twig/twig&quot;</span><span class="o">:</span> <span class="s2">&quot;1.*&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>Install via composer</li>
+</ol>
+<div class="highlight-bash"><div class="highlight"><pre>php composer.phar install
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to learn more about Composer, the <tt class="docutils literal"><span class="pre">composer.json</span></tt> file syntax
+and its usage, you can read the <a class="reference external" href="http://getcomposer.org/doc">online documentation</a>.</p>
+</div>
+</div>
+<div class="section" id="installing-from-the-tarball-release">
+<h3>Installing from the tarball release<a class="headerlink" href="#installing-from-the-tarball-release" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>Download the most recent tarball from the <a class="reference external" href="https://github.com/fabpot/Twig/tags">download page</a></li>
 <li>Unpack the tarball</li>
 <li>Move the files somewhere in your project</li>
 </ol>
@@ -85,9 +117,8 @@ the tarball.</p>
 <div class="section" id="installing-the-development-version">
 <h3>Installing the development version<a class="headerlink" href="#installing-the-development-version" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Install Subversion or Git</li>
-<li>For Subversion: <tt class="docutils literal"><span class="pre">svn</span> <span class="pre">co</span> <span class="pre">http://svn.twig-project.org/trunk/</span> <span class="pre">twig</span></tt>, for Git:
-<tt class="docutils literal"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git://github.com/fabpot/Twig.git</span></tt></li>
+<li>Install Git</li>
+<li><tt class="docutils literal"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git://github.com/fabpot/Twig.git</span></tt></li>
 </ol>
 </div>
 <div class="section" id="installing-the-pear-package">
@@ -97,6 +128,32 @@ the tarball.</p>
 <li><tt class="docutils literal"><span class="pre">pear</span> <span class="pre">channel-discover</span> <span class="pre">pear.twig-project.org</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">pear</span> <span class="pre">install</span> <span class="pre">twig/Twig</span></tt> (or <tt class="docutils literal"><span class="pre">pear</span> <span class="pre">install</span> <span class="pre">twig/Twig-beta</span></tt>)</li>
 </ol>
+</div>
+<div class="section" id="installing-the-c-extension">
+<h3>Installing the C extension<a class="headerlink" href="#installing-the-c-extension" title="Permalink to this headline">¶</a></h3>
+<p class="versionadded">
+<span class="versionmodified">New in version 1.4: </span>The C extension was added in Twig 1.4.</p>
+<p>Twig comes with a C extension that enhances the performance of the Twig
+runtime engine. You can install it like any other PHP extension:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>ext/twig
+<span class="nv">$ </span>phpize
+<span class="nv">$ </span>./configure
+<span class="nv">$ </span>make
+<span class="nv">$ </span>make install
+</pre></div>
+</div>
+<p>Finally, enable the extension in your <tt class="docutils literal"><span class="pre">php.ini</span></tt> configuration file:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="na">extension</span><span class="o">=</span><span class="s">twig.so</span>
+</pre></div>
+</div>
+<p>And from now on, Twig will automatically compile your templates to take
+advantage of the C extension. Note that this extension does not replace the
+PHP code but only provides an optimized version of the
+<tt class="docutils literal"><span class="pre">Twig_Template::getAttribute()</span></tt> method.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">On Windows, you can also simply download and install a <a class="reference external" href="https://github.com/stealth35/stealth35.github.com/downloads">pre-built DLL</a>.</p>
+</div>
 </div>
 </div>
 <div class="section" id="basic-api-usage">
@@ -108,6 +165,10 @@ Twig_Autoloader::register();</pre>
 </div>
 <p>Replace the <tt class="docutils literal"><span class="pre">/path/to/lib/</span></tt> path with the path you used for Twig
 installation.</p>
+<p>If you have installed Twig via Composer you can take advantage of Composer&#8217;s
+autoload mechanism by replacing the previous snippet for:</p>
+<div class="highlight-python"><pre>require_once '/path/to/vendor/autoload.php'</pre>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Twig follows the PEAR convention names for its classes, which means you
@@ -116,23 +177,21 @@ can easily integrate Twig classes loading in your own autoloader.</p>
 <div class="highlight-php"><div class="highlight"><pre><span class="x">$loader = new Twig_Loader_String();</span>
 <span class="x">$twig = new Twig_Environment($loader);</span>
 
-<span class="x">$template = $twig-&gt;loadTemplate(&#39;Hello {{ name }}!&#39;);</span>
-
-<span class="x">$template-&gt;display(array(&#39;name&#39; =&gt; &#39;Fabien&#39;));</span>
+<span class="x">echo $twig-&gt;render(&#39;Hello {{ name }}!&#39;, array(&#39;name&#39; =&gt; &#39;Fabien&#39;));</span>
 </pre></div>
 </div>
 <p>Twig uses a loader (<tt class="docutils literal"><span class="pre">Twig_Loader_String</span></tt>) to locate templates, and an
 environment (<tt class="docutils literal"><span class="pre">Twig_Environment</span></tt>) to store the configuration.</p>
-<p>The <tt class="docutils literal"><span class="pre">loadTemplate()</span></tt> method uses the loader to locate and load the template
-and returns a template object (<tt class="docutils literal"><span class="pre">Twig_Template</span></tt>) which is suitable for
-rendering with the <tt class="docutils literal"><span class="pre">display()</span></tt> method.</p>
-<p>Twig also comes with a filesystem loader:</p>
+<p>The <tt class="docutils literal"><span class="pre">render()</span></tt> method loads the template passed as a first argument and
+renders it with the variables passed as a second argument.</p>
+<p>As templates are generally stored on the filesystem, Twig also comes with a
+filesystem loader:</p>
 <div class="highlight-python"><pre>$loader = new Twig_Loader_Filesystem('/path/to/templates');
 $twig = new Twig_Environment($loader, array(
-  'cache' =&gt; '/path/to/compilation_cache',
+    'cache' =&gt; '/path/to/compilation_cache',
 ));
 
-$template = $twig-&gt;loadTemplate('index.html');</pre>
+echo $twig-&gt;render('index.html', array('name' =&gt; 'Fabien'));</pre>
 </div>
 </div>
 </div>
@@ -148,9 +207,11 @@ $template = $twig-&gt;loadTemplate('index.html');</pre>
 <li><a class="reference internal" href="#">Introduction</a><ul>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
-<li><a class="reference internal" href="#from-the-tarball-release">From the tarball release</a></li>
+<li><a class="reference internal" href="#installing-via-composer-recommended">Installing via Composer (recommended)</a></li>
+<li><a class="reference internal" href="#installing-from-the-tarball-release">Installing from the tarball release</a></li>
 <li><a class="reference internal" href="#installing-the-development-version">Installing the development version</a></li>
 <li><a class="reference internal" href="#installing-the-pear-package">Installing the PEAR package</a></li>
+<li><a class="reference internal" href="#installing-the-c-extension">Installing the C extension</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#basic-api-usage">Basic API Usage</a></li>
@@ -172,7 +233,7 @@ $template = $twig-&gt;loadTemplate('index.html');</pre>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -198,12 +259,12 @@ $template = $twig-&gt;loadTemplate('index.html');</pre>
         <li class="right" >
           <a href="index.html" title="Twig"
              >previous</a> |</li>
-        <li><a href="index.html">Twig v1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Twig Documentation 1.13.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, Rafael Goulart.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+        &copy; Copyright 2013, Fabpot.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
